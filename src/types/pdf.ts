@@ -1,9 +1,24 @@
+export interface PDFPage {
+  pageNumber: number;
+  selected: boolean;
+  thumbnail?: string;
+}
+
 export interface PDFFile {
   id: string;
   file: File;
   name: string;
   size: number;
   sizeFormatted: string;
+  pages: PDFPage[];
+  totalPages: number;
+}
+
+export interface SelectedPage {
+  fileId: string;
+  fileName: string;
+  pageNumber: number;
+  originalIndex: number;
 }
 
 export interface MergeProgress {

@@ -16,7 +16,7 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
   const [isDragOver, setIsDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleFiles = useCallback((files: FileList) => {
+  const handleFiles = useCallback(async (files: FileList) => {
     setError(null);
     
     const fileArray = Array.from(files);
@@ -27,13 +27,13 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
       return;
     }
 
-    const validFiles: PDFFile[] = [];
+    const validFiles: File[] = [];
     const errors: string[] = [];
 
     fileArray.forEach((file) => {
       const validation = validatePDFFile(file);
       if (validation.valid) {
-        validFiles.push(createPDFFileObject(file));
+        validFiles.push(file);
       } else {
         errors.push(`${file.name}: ${validation.error}`);
       }
@@ -44,7 +44,15 @@ export const FileDropZone: React.FC<FileDropZoneProps> = ({
     }
 
     if (validFiles.length > 0) {
-      onFilesAdded(validFiles);
+      try {
+        const pdfFileObjects = await Promise.all(
+          validFiles.map(file => createPDFFileObject(file))
+        );
+        onFilesAdded(pdfFileObjects);
+      } catch (error) {
+        console.error('Error processing PDF files:', error);
+        setError('Failed to process some PDF files. Please try again.');
+      }
     }
   }, [onFilesAdded, existingFilesCount]);
 

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
 import { Shield, Zap, Lock } from 'lucide-react';
-import { PDFFile, MergeProgress as MergeProgressType, MergeResult } from '../types/pdf';
-import { mergePDFs } from '../utils/pdfUtils';
+import { PDFFile, MergeProgress as MergeProgressType, MergeResult, SelectedPage, PDFPage } from '../types/pdf';
+import { mergeSelectedPages } from '../utils/pdfUtils';
 import { FileDropZone } from '../components/pdf/FileDropZone';
 import { FileList } from '../components/pdf/FileList';
+import { PageSelector } from '../components/pdf/PageSelector';
+import { SelectedPagesList } from '../components/pdf/SelectedPagesList';
 import { MergeProgress } from '../components/pdf/MergeProgress';
 import { DownloadCard } from '../components/pdf/DownloadCard';
 import { Button } from '../components/ui/button';
@@ -11,6 +13,8 @@ import { Header } from '../components/layout/Header';
 
 const PDFMerger: React.FC = () => {
   const [files, setFiles] = useState<PDFFile[]>([]);
+  const [selectedPages, setSelectedPages] = useState<SelectedPage[]>([]);
+  const [pageSelectionFile, setPageSelectionFile] = useState<PDFFile | null>(null);
   const [mergeProgress, setMergeProgress] = useState<MergeProgressType>({
     isActive: false,
     progress: 0,
@@ -19,31 +23,94 @@ const PDFMerger: React.FC = () => {
 
   const handleFilesAdded = (newFiles: PDFFile[]) => {
     setFiles(prev => [...prev, ...newFiles]);
+    // Auto-add all pages from new files to selected pages
+    const newSelectedPages: SelectedPage[] = [];
+    newFiles.forEach(file => {
+      file.pages.forEach(page => {
+        if (page.selected) {
+          newSelectedPages.push({
+            fileId: file.id,
+            fileName: file.name,
+            pageNumber: page.pageNumber,
+            originalIndex: selectedPages.length + newSelectedPages.length,
+          });
+        }
+      });
+    });
+    setSelectedPages(prev => [...prev, ...newSelectedPages]);
   };
 
   const handleFileRemove = (id: string) => {
     setFiles(prev => prev.filter(file => file.id !== id));
+    // Remove associated pages from selected pages
+    setSelectedPages(prev => prev.filter(page => page.fileId !== id));
   };
 
   const handleFilesReorder = (reorderedFiles: PDFFile[]) => {
     setFiles(reorderedFiles);
   };
 
+  const handleSelectPages = (fileId: string) => {
+    const file = files.find(f => f.id === fileId);
+    if (file) {
+      setPageSelectionFile(file);
+    }
+  };
+
+  const handlePageSelectionChange = (fileId: string, pages: PDFPage[]) => {
+    // Update file pages
+    setFiles(prev => prev.map(file => 
+      file.id === fileId ? { ...file, pages } : file
+    ));
+
+    // Update selected pages
+    setSelectedPages(prev => {
+      // Remove existing pages from this file
+      const filteredPages = prev.filter(p => p.fileId !== fileId);
+      
+      // Add newly selected pages
+      const file = files.find(f => f.id === fileId);
+      const newSelectedPages: SelectedPage[] = [];
+      pages.forEach(page => {
+        if (page.selected) {
+          newSelectedPages.push({
+            fileId,
+            fileName: file?.name || '',
+            pageNumber: page.pageNumber,
+            originalIndex: filteredPages.length + newSelectedPages.length,
+          });
+        }
+      });
+      
+      return [...filteredPages, ...newSelectedPages];
+    });
+  };
+
+  const handleSelectedPagesReorder = (reorderedPages: SelectedPage[]) => {
+    setSelectedPages(reorderedPages);
+  };
+
+  const handleRemoveSelectedPage = (pageIndex: number) => {
+    setSelectedPages(prev => prev.filter((_, index) => index !== pageIndex));
+  };
+
   const handleMerge = async () => {
-    if (files.length < 2) return;
+    if (selectedPages.length === 0) return;
 
     setMergeResult(null);
-    const result = await mergePDFs(files, setMergeProgress);
+    const result = await mergeSelectedPages(selectedPages, files, setMergeProgress);
     setMergeResult(result);
   };
 
   const handleReset = () => {
     setFiles([]);
+    setSelectedPages([]);
+    setPageSelectionFile(null);
     setMergeProgress({ isActive: false, progress: 0 });
     setMergeResult(null);
   };
 
-  const canMerge = files.length >= 2 && !mergeProgress.isActive;
+  const canMerge = selectedPages.length >= 1 && !mergeProgress.isActive;
 
   return (
     <div className="min-h-screen bg-background">
@@ -134,26 +201,46 @@ const PDFMerger: React.FC = () => {
               files={files}
               onReorder={handleFilesReorder}
               onRemove={handleFileRemove}
+              onSelectPages={handleSelectPages}
+            />
+          )}
+
+          {/* Selected Pages List */}
+          {selectedPages.length > 0 && !mergeResult?.success && (
+            <SelectedPagesList
+              selectedPages={selectedPages}
+              onReorder={handleSelectedPagesReorder}
+              onRemovePage={handleRemoveSelectedPage}
             />
           )}
 
           {/* Merge Button */}
-          {files.length >= 2 && !mergeResult?.success && (
+          {selectedPages.length >= 1 && !mergeResult?.success && (
             <div className="text-center animate-bounce-in">
               <Button
                 onClick={handleMerge}
                 disabled={!canMerge}
                 className="btn-gradient text-lg px-8 py-3 h-auto"
               >
-                {mergeProgress.isActive ? 'Merging...' : `Merge ${files.length} PDFs`}
+                {mergeProgress.isActive ? 'Merging...' : `Merge ${selectedPages.length} Page${selectedPages.length !== 1 ? 's' : ''}`}
               </Button>
               
-              {files.length < 2 && (
+              {selectedPages.length === 0 && (
                 <p className="text-sm text-muted-foreground mt-2">
-                  Add at least 2 PDF files to merge
+                  Select at least 1 page to merge
                 </p>
               )}
             </div>
+          )}
+
+          {/* Page Selector Modal */}
+          {pageSelectionFile && (
+            <PageSelector
+              file={pageSelectionFile}
+              isOpen={!!pageSelectionFile}
+              onClose={() => setPageSelectionFile(null)}
+              onPageSelectionChange={handlePageSelectionChange}
+            />
           )}
 
           {/* Help Text */}
@@ -165,9 +252,10 @@ const PDFMerger: React.FC = () => {
                 </h3>
                 <div className="space-y-2 text-sm text-muted-foreground">
                   <p>1. Upload your PDF files (up to 20 files, 50MB each)</p>
-                  <p>2. Drag and drop to reorder them</p>
-                  <p>3. Click merge to combine into one PDF</p>
-                  <p>4. Download your merged file instantly</p>
+                  <p>2. Click "Select Pages" to choose specific pages</p>
+                  <p>3. Drag and drop to reorder selected pages</p>
+                  <p>4. Click merge to combine into one PDF</p>
+                  <p>5. Download your merged file instantly</p>
                 </div>
               </div>
             </div>

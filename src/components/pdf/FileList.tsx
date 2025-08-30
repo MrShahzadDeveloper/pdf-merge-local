@@ -6,12 +6,14 @@ interface FileListProps {
   files: PDFFile[];
   onReorder: (files: PDFFile[]) => void;
   onRemove: (id: string) => void;
+  onSelectPages: (fileId: string) => void;
 }
 
 export const FileList: React.FC<FileListProps> = ({
   files,
   onReorder,
   onRemove,
+  onSelectPages,
 }) => {
   const [draggedItem, setDraggedItem] = useState<string | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
@@ -88,6 +90,7 @@ export const FileList: React.FC<FileListProps> = ({
               file={file}
               index={index}
               onRemove={onRemove}
+              onSelectPages={onSelectPages}
               isDragging={draggedItem === file.id}
               dragHandleProps={{
                 onMouseDown: (e: React.MouseEvent) => {

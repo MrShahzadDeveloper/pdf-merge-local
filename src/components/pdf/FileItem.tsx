@@ -1,5 +1,5 @@
 import React from 'react';
-import { FileText, X, GripVertical } from 'lucide-react';
+import { FileText, Settings, X, GripVertical } from 'lucide-react';
 import { PDFFile } from '../../types/pdf';
 import { Button } from '../ui/button';
 
@@ -7,6 +7,7 @@ interface FileItemProps {
   file: PDFFile;
   index: number;
   onRemove: (id: string) => void;
+  onSelectPages: (fileId: string) => void;
   isDragging?: boolean;
   dragHandleProps?: any;
 }
@@ -15,9 +16,12 @@ export const FileItem: React.FC<FileItemProps> = ({
   file,
   index,
   onRemove,
+  onSelectPages,
   isDragging = false,
   dragHandleProps,
 }) => {
+  const selectedPages = file.pages.filter(p => p.selected);
+  
   return (
     <div className={`file-item ${isDragging ? 'dragging' : ''} animate-slide-up`}>
       <div className="flex items-center gap-3">
@@ -46,10 +50,23 @@ export const FileItem: React.FC<FileItemProps> = ({
               {file.name}
             </h4>
           </div>
-          <p className="text-sm text-muted-foreground">
-            {file.sizeFormatted}
-          </p>
+          <div className="flex items-center gap-4 text-sm text-muted-foreground">
+            <span>{file.sizeFormatted}</span>
+            <span>•</span>
+            <span>{selectedPages.length} of {file.totalPages} pages selected</span>
+          </div>
         </div>
+
+        {/* Select Pages Button */}
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => onSelectPages(file.id)}
+          className="flex-shrink-0"
+        >
+          <Settings className="h-4 w-4 mr-1" />
+          Select Pages
+        </Button>
 
         {/* Remove Button */}
         <Button
