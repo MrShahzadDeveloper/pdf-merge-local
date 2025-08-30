@@ -2,41 +2,72 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
-All colors MUST be HSL.
-*/
+/* PDF Merger Design System - Modern, Professional, Privacy-Focused */
 
 @layer base {
   :root {
-    --background: 0 0% 100%;
-    --foreground: 222.2 84% 4.9%;
+    --background: 248 250 252;
+    --foreground: 203 8% 16%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222.2 84% 4.9%;
+    --card: 255 255 255;
+    --card-foreground: 203 8% 16%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222.2 84% 4.9%;
+    --popover: 255 255 255;
+    --popover-foreground: 203 8% 16%;
 
-    --primary: 222.2 47.4% 11.2%;
-    --primary-foreground: 210 40% 98%;
+    /* Primary: Professional Blue-Purple */
+    --primary: 232 93% 56%;
+    --primary-glow: 234 89% 74%;
+    --primary-foreground: 255 255 255;
 
-    --secondary: 210 40% 96.1%;
-    --secondary-foreground: 222.2 47.4% 11.2%;
+    /* Secondary: Soft Purple */
+    --secondary: 250 240 252;
+    --secondary-foreground: 232 93% 56%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    /* Muted: Light Gray */
+    --muted: 248 250 252;
+    --muted-foreground: 203 8% 46%;
 
-    --accent: 210 40% 96.1%;
-    --accent-foreground: 222.2 47.4% 11.2%;
+    /* Accent: Success Green */
+    --accent: 142 71% 45%;
+    --accent-glow: 142 69% 58%;
+    --accent-foreground: 255 255 255;
 
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 210 40% 98%;
+    /* Destructive: Warning Red */
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 255 255 255;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
-    --ring: 222.2 84% 4.9%;
+    /* Borders and Inputs */
+    --border: 220 13% 91%;
+    --input: 220 13% 91%;
+    --ring: 232 93% 56%;
 
-    --radius: 0.5rem;
+    --radius: 0.75rem;
+
+    /* PDF Merger Specific Colors */
+    --pdf-upload: 232 93% 56%;
+    --pdf-upload-hover: 234 89% 74%;
+    --pdf-success: 142 71% 45%;
+    --pdf-warning: 38 92% 50%;
+    --pdf-error: 0 84% 60%;
+
+    /* Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(232 93% 56%) 0%, hsl(250 89% 64%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(232 93% 56%) 0%, hsl(282 73% 45%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(255 255 255) 0%, hsl(248 250 252) 100%);
+    --gradient-upload: linear-gradient(135deg, hsl(234 89% 74% / 0.1) 0%, hsl(250 89% 64% / 0.1) 100%);
+
+    /* Shadows */
+    --shadow-sm: 0 2px 4px hsl(232 93% 56% / 0.1);
+    --shadow-md: 0 4px 20px hsl(232 93% 56% / 0.15);
+    --shadow-lg: 0 10px 40px hsl(232 93% 56% / 0.2);
+    --shadow-glow: 0 0 40px hsl(232 93% 56% / 0.3);
+
+    /* Animations */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    --radius: 0.75rem;
 
     --sidebar-background: 0 0% 98%;
 
@@ -56,33 +87,60 @@ All colors MUST be HSL.
   }
 
   .dark {
-    --background: 222.2 84% 4.9%;
+    --background: 15 16% 8%;
     --foreground: 210 40% 98%;
 
-    --card: 222.2 84% 4.9%;
+    --card: 20 14% 11%;
     --card-foreground: 210 40% 98%;
 
-    --popover: 222.2 84% 4.9%;
+    --popover: 20 14% 11%;
     --popover-foreground: 210 40% 98%;
 
-    --primary: 210 40% 98%;
-    --primary-foreground: 222.2 47.4% 11.2%;
+    /* Primary: Bright Blue-Purple for dark mode */
+    --primary: 234 89% 74%;
+    --primary-glow: 236 86% 82%;
+    --primary-foreground: 15 16% 8%;
 
-    --secondary: 217.2 32.6% 17.5%;
-    --secondary-foreground: 210 40% 98%;
+    /* Secondary: Dark Purple */
+    --secondary: 20 14% 11%;
+    --secondary-foreground: 234 89% 74%;
 
-    --muted: 217.2 32.6% 17.5%;
-    --muted-foreground: 215 20.2% 65.1%;
+    /* Muted: Dark Gray */
+    --muted: 25 16% 15%;
+    --muted-foreground: 215 20% 65%;
 
-    --accent: 217.2 32.6% 17.5%;
-    --accent-foreground: 210 40% 98%;
+    /* Accent: Success Green */
+    --accent: 142 69% 58%;
+    --accent-glow: 142 71% 66%;
+    --accent-foreground: 15 16% 8%;
 
-    --destructive: 0 62.8% 30.6%;
+    /* Destructive: Warning Red */
+    --destructive: 0 72% 51%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 217.2 32.6% 17.5%;
-    --input: 217.2 32.6% 17.5%;
-    --ring: 212.7 26.8% 83.9%;
+    /* Borders and Inputs */
+    --border: 25 16% 20%;
+    --input: 25 16% 20%;
+    --ring: 234 89% 74%;
+
+    /* PDF Merger Dark Mode Colors */
+    --pdf-upload: 234 89% 74%;
+    --pdf-upload-hover: 236 86% 82%;
+    --pdf-success: 142 69% 58%;
+    --pdf-warning: 38 100% 56%;
+    --pdf-error: 0 72% 51%;
+
+    /* Dark Mode Gradients */
+    --gradient-primary: linear-gradient(135deg, hsl(234 89% 74%) 0%, hsl(250 86% 78%) 100%);
+    --gradient-hero: linear-gradient(135deg, hsl(234 89% 74%) 0%, hsl(282 78% 58%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(20 14% 11%) 0%, hsl(25 16% 15%) 100%);
+    --gradient-upload: linear-gradient(135deg, hsl(234 89% 74% / 0.1) 0%, hsl(250 86% 78% / 0.1) 100%);
+
+    /* Dark Mode Shadows */
+    --shadow-sm: 0 2px 4px hsl(0 0% 0% / 0.3);
+    --shadow-md: 0 4px 20px hsl(0 0% 0% / 0.4);
+    --shadow-lg: 0 10px 40px hsl(0 0% 0% / 0.5);
+    --shadow-glow: 0 0 40px hsl(234 89% 74% / 0.4);
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -100,6 +158,81 @@ All colors MUST be HSL.
   }
 
   body {
-    @apply bg-background text-foreground;
+    @apply bg-background text-foreground transition-colors duration-300;
   }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    @apply w-2;
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-muted;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-muted-foreground/30 rounded-full;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    @apply bg-muted-foreground/50;
+  }
+}
+
+@layer components {
+  /* PDF Upload Zone */
+  .pdf-upload-zone {
+    @apply relative border-2 border-dashed border-border bg-gradient-to-br from-muted/50 to-background rounded-2xl p-8 transition-all duration-300 hover:border-primary/50 hover:bg-gradient-to-br hover:from-primary/5 hover:to-primary/10;
+  }
+
+  .pdf-upload-zone.drag-over {
+    @apply border-primary bg-gradient-to-br from-primary/10 to-primary/20 scale-[1.02];
+  }
+
+  /* File Item */
+  .file-item {
+    @apply bg-card border border-border rounded-xl p-4 transition-all duration-300 hover:shadow-md hover:border-primary/30;
+  }
+
+  .file-item.dragging {
+    @apply opacity-50 scale-95 rotate-2;
+  }
+
+  /* Gradient Buttons */
+  .btn-gradient {
+    @apply bg-gradient-to-r from-primary to-primary-glow text-primary-foreground font-medium px-6 py-3 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98];
+  }
+
+  .btn-success {
+    @apply bg-gradient-to-r from-accent to-accent-glow text-accent-foreground font-medium px-6 py-3 rounded-xl transition-all duration-300 hover:shadow-lg hover:scale-[1.02] active:scale-[0.98];
+  }
+
+  /* Animations */
+  .animate-bounce-in {
+    animation: bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  }
+
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out;
+  }
+
+  .animate-pulse-glow {
+    animation: pulseGlow 2s ease-in-out infinite;
+  }
+}
+
+@keyframes bounceIn {
+  0% { transform: scale(0.8) translateY(20px); opacity: 0; }
+  60% { transform: scale(1.05) translateY(-5px); opacity: 1; }
+  100% { transform: scale(1) translateY(0); }
+}
+
+@keyframes slideUp {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 20px hsl(var(--primary) / 0.3); }
+  50% { box-shadow: 0 0 40px hsl(var(--primary) / 0.6); }
 }
